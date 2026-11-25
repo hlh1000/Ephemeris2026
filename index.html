@@ -7,14 +7,13 @@
 <style>
 :root{
   --hue:220;
-  --today-hue:255;
   --accent:hsl(var(--hue),72%,46%);
   --accent-deep:hsl(var(--hue),78%,28%);
   --accent-soft:hsla(var(--hue),85%,58%,0.13);
   --accent-border:hsla(var(--hue),75%,55%,0.35);
   --glow:hsla(var(--hue),90%,62%,0.28);
-  --today-bg:hsla(var(--today-hue),78%,60%,0.18);
-  --today-border:hsla(var(--today-hue),75%,50%,0.45);
+  --today-bg:hsla(var(--hue),72%,68%,0.24);
+  --today-border:hsla(var(--hue),70%,56%,0.42);
 }
 *{box-sizing:border-box}
 body{margin:0;padding:10px;min-height:100vh;transition:background .25s ease,color .2s ease}
@@ -155,7 +154,7 @@ body.t-ethereal .box,body.t-ethereal .box-grid{background:hsla(var(--hue),46%,9%
 body.t-ethereal th{background:hsla(var(--hue),52%,30%,.42);color:hsl(var(--hue),92%,88%);text-align:left;font-size:12px;letter-spacing:.4px;border-bottom:1px solid hsla(var(--hue),80%,74%,.26)}
 body.t-ethereal td{border-bottom:1px solid hsla(var(--hue),70%,74%,.12)}
 body.t-ethereal .grid-tbl tr:nth-child(even) td{background:hsla(var(--hue),80%,70%,.05)}
-body.t-ethereal tr.today-row td{background:hsla(var(--today-hue),82%,58%,.24)!important;box-shadow:inset 0 1px 0 hsla(var(--today-hue),90%,75%,.45),inset 0 -1px 0 hsla(var(--today-hue),90%,75%,.45);font-weight:bold}
+body.t-ethereal tr.today-row td{background:hsla(var(--hue),80%,72%,.22)!important;box-shadow:inset 0 1px 0 hsla(var(--hue),90%,82%,.42),inset 0 -1px 0 hsla(var(--hue),90%,82%,.42);font-weight:bold}
 body.t-ethereal tr.tapped-row td{background:hsla(var(--hue),85%,68%,.22)!important}
 body.t-ethereal tr:last-child td{border-bottom:none}
 body.t-ethereal tr.asc td{background:hsla(var(--hue),85%,68%,.18);font-weight:bold}
@@ -180,7 +179,7 @@ body.t-win98 .box,body.t-win98 .box-grid{background:#fff;border:2px solid;border
 body.t-win98 th{background:hsl(var(--hue),88%,26%);color:#fff;text-align:left;border:1px solid hsl(var(--hue),80%,32%);font-size:12px}
 body.t-win98 td{border:1px solid hsl(var(--hue),65%,36%)}
 body.t-win98 tr:nth-child(even) td{background:hsl(var(--hue),85%,96%)}
-body.t-win98 tr.today-row td{background:hsla(var(--today-hue),85%,84%,.85)!important;font-weight:bold}
+body.t-win98 tr.today-row td{background:hsla(var(--hue),78%,78%,.65)!important;font-weight:bold}
 body.t-win98 tr.tapped-row td{background:hsl(var(--hue),85%,89%)!important}
 body.t-win98 tr:last-child td{border-bottom:none}
 body.t-win98 tr.asc td{background:hsl(var(--hue),85%,91%);font-weight:bold}
@@ -201,6 +200,7 @@ body.slider-default.t-minimal .box,body.slider-default.t-minimal .box-grid{borde
 body.slider-default.t-minimal th{background:#fafafa;color:#52525b;border-bottom:1px solid #e4e4e7}
 body.slider-default.t-minimal td{border-bottom:1px solid #f4f4f5}
 body.slider-default.t-minimal .grid-tbl tr:nth-child(even) td{background:#fcfcfd}
+body.slider-default.t-minimal tr.today-row td{background:hsla(var(--hue),72%,68%,.24)!important}
 body.slider-default.t-minimal tr.tapped-row td{background:#f4f4f5!important}
 body.slider-default.t-minimal tr.asc td{background:#f8fafc}
 body.slider-default.t-minimal .g{color:#3f3f46}
@@ -221,6 +221,7 @@ body.slider-default.t-ethereal .box,body.slider-default.t-ethereal .box-grid{bac
 body.slider-default.t-ethereal th{background:rgba(91,72,158,.38);color:#e9d5ff;border-bottom:1px solid rgba(196,181,253,.25)}
 body.slider-default.t-ethereal td{border-bottom:1px solid rgba(196,181,253,.12)}
 body.slider-default.t-ethereal .grid-tbl tr:nth-child(even) td{background:rgba(167,139,250,.05)}
+body.slider-default.t-ethereal tr.today-row td{background:hsla(var(--hue),80%,72%,.22)!important}
 body.slider-default.t-ethereal tr.tapped-row td{background:rgba(167,139,250,.18)!important}
 body.slider-default.t-ethereal tr.asc td{background:rgba(167,139,250,.16)}
 body.slider-default.t-ethereal .g{color:#e9d5ff;text-shadow:none}
@@ -233,6 +234,7 @@ body.slider-default.t-win98 .m-btn.active,body.slider-default.t-win98 .cal-m.act
 body.slider-default.t-win98 th{background:#000080;border:1px solid #003399}
 body.slider-default.t-win98 td{border:1px solid #003399}
 body.slider-default.t-win98 tr:nth-child(even) td{background:#eef4ff}
+body.slider-default.t-win98 tr.today-row td{background:hsla(var(--hue),78%,78%,.65)!important}
 body.slider-default.t-win98 tr.tapped-row td{background:#d4e4ff!important}
 body.slider-default.t-win98 tr.asc td{background:#dce8ff}
 body.slider-default.t-win98 .g{color:#000080}
@@ -327,7 +329,6 @@ body.slider-default.t-win98 .l{color:#334466}
 
 </div>
 
-
 <script type="module">
 import SwissEph from 'https://cdn.jsdelivr.net/gh/prolaxu/swisseph-wasm@0.1.0/src/swisseph.js';
 
@@ -375,7 +376,6 @@ const DECAN_MAP = {
   "Disks:8":  "Virgo 1",  "Disks:9":  "Virgo 2",  "Disks:10": "Virgo 3"
 };
 
-// Reverse lookup: "Aries 2" -> "3 of Wands"
 const DECAN_TO_CARD = {};
 for (const [key, decanLabel] of Object.entries(DECAN_MAP)) {
   const [suitKey, rank] = key.split(":");
@@ -464,10 +464,6 @@ const MONTH_OFFSETS = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
 const rad = d => (d * Math.PI) / 180;
 const deg = r => (r * 180) / Math.PI;
 const n360 = d => ((d % 360) + 360) % 360;
-const angDiff = (a, b) => {
-  const d = Math.abs(n360(a) - n360(b));
-  return d > 180 ? 360 - d : d;
-};
 
 let coords = { lat: 34.1478, lon: -118.1445 };
 let viewDate = new Date();
@@ -479,16 +475,10 @@ let currentTheme = "t-minimal";
 let lastTapTime = 0;
 let tappedDay = null;
 let eclipseMode = false;
-let colMode = "speed"; // "speed" | "decan" | "card"
-let randomTodayOffset = Math.floor(Math.random() * 75) + 28; // harmonious offset 28..102 deg
+let colMode = "speed";
 
 function activeGridBodies() {
   return eclipseMode ? [...BASE_BODIES, NODE_BODY] : BASE_BODIES;
-}
-
-function updateTodayColor(baseHue) {
-  const harmoniousHue = (Number(baseHue) + randomTodayOffset) % 360;
-  document.documentElement.style.setProperty("--today-hue", String(harmoniousHue));
 }
 
 function clampYear(y) {
@@ -513,7 +503,6 @@ function setHue(val) {
   slider.value = String(cleanVal);
   const effectiveHue = cleanVal === 0 ? 220 : cleanVal;
   document.documentElement.style.setProperty("--hue", String(effectiveHue));
-  updateTodayColor(effectiveHue);
   applyClasses();
   try { localStorage.setItem("planets_hue", String(cleanVal)); } catch (e) {}
 }
@@ -572,7 +561,7 @@ function splitLon(lon) {
   const arcmin = totalArcmin % 60;
   const degInSign = degInZodiac % 30;
   const signIdx = Math.floor(degInZodiac / 30);
-  const decanNum = Math.floor(degInSign / 10) + 1; // 1, 2, or 3
+  const decanNum = Math.floor(degInSign / 10) + 1;
   return {
     degInSign,
     arcmin,
@@ -583,7 +572,6 @@ function splitLon(lon) {
   };
 }
 
-// Swapped format: Sign name first, then degree & arcminutes
 function fmtSwapped(lon) {
   const { degInSign, arcmin, abbr } = splitLon(lon);
   return `${abbr} ${String(degInSign).padStart(2, "0")}°${String(arcmin).padStart(2, "0")}′`;
@@ -603,48 +591,41 @@ function fmtCardForLon(lon) {
   return DECAN_TO_CARD[decanLabel] || "—";
 }
 
-// High-precision syzygy + nodal latitude check for Solar & Lunar eclipses
 function evalEclipseState(dt) {
   const jd = toJulianGMT(dt);
   const flags = swe.SEFLG_SWIEPH || 0;
   const sun = swe.calc_ut(jd, swe.SE_SUN, flags);
   const moon = swe.calc_ut(jd, swe.SE_MOON, flags);
-  const phase = n360(moon[0] - sun[0]); // 0 = New Moon, 180 = Full Moon
+  const phase = n360(moon[0] - sun[0]);
   const moonLat = Math.abs(moon[1] || 0);
 
   const distNew = phase > 180 ? 360 - phase : phase;
   const distFull = Math.abs(phase - 180);
 
-  // Solar eclipse occurs near New Moon when Moon's ecliptic latitude <= ~1.58°
   if (distNew <= 16 && moonLat <= 1.58) {
-    return { type: "solar", emoji: "🌑", distDeg: distNew };
+    return { type: "solar", emoji: "🟡", distDeg: distNew };
   }
-  // Lunar eclipse occurs near Full Moon when Moon's ecliptic latitude <= ~1.05°
   if (distFull <= 13 && moonLat <= 1.05) {
     return { type: "lunar", emoji: "🌕", distDeg: distFull };
   }
   return null;
 }
 
-// Find exact peak syzygy timestamp within +/- 3.2 days of targetDt if an eclipse occurs
 function findNearbyEclipse(targetDt) {
-  const stepMs = 2 * 3600 * 1000; // 2-hour scan across +/- 3.2 days
+  const stepMs = 2 * 3600 * 1000;
   const windowMs = 3.2 * 86400 * 1000;
   let best = null;
 
   for (let offset = -windowMs; offset <= windowMs; offset += stepMs) {
     const probe = new Date(targetDt.getTime() + offset);
     const st = evalEclipseState(probe);
-    if (st) {
-      if (!best || st.distDeg < best.distDeg) {
-        best = { ...st, time: probe };
-      }
+    if (st && (!best || st.distDeg < best.distDeg)) {
+      best = { ...st, time: probe };
     }
   }
 
   if (!best) return null;
 
-  // Refine peak within +/- 2 hours to the nearest 5 minutes
   let refined = best;
   for (let m = -120; m <= 120; m += 5) {
     const probe = new Date(best.time.getTime() + m * 60000);
@@ -660,7 +641,6 @@ function findNearbyEclipse(targetDt) {
   return null;
 }
 
-// Check if an eclipse happens on a specific UTC calendar day (for the Ephemeris table)
 function findDayEclipse(year, month, day) {
   let best = null;
   for (let h = 0; h < 24; h += 3) {
@@ -962,9 +942,8 @@ function resetNow() {
   calMonth = viewDate.getUTCMonth();
   gridYear = viewDate.getUTCFullYear();
   tappedDay = null;
-  randomTodayOffset = Math.floor(Math.random() * 75) + 28;
-  const currentHue = Number(document.getElementById("hueSlider").value) || 220;
-  updateTodayColor(currentHue);
+  const nextHue = Math.floor(Math.random() * 360);
+  setHue(nextHue);
   document.getElementById("tarotList").dataset.exhausted = "0";
   resetTarotDeck();
   renderAll();
@@ -1054,3 +1033,4 @@ resetNow();
 </script>
 </body>
 </html>
+
