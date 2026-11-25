@@ -5,4 +5,4 @@ It's kind of in response to how much work I did mentally the past year in partic
 
 Because it pulls swiss ephemeris data by api, it should be totally accurate rather than approximate, if it doesn't break. The app tries to pull your location.
 
-You can pull a Tarot Card by pushing the Tarot Draw button. Every card will list in a column until you press refresh. Press refresh to shuffle the deck. The 2-9 pip cards are assigned their decan signification.
+You can draw a Tarot Card by pushing the Tarot Draw button. Every card will list in a column until you press refresh. Press refresh to shuffle the deck. The 2-9 pip cards are assigned their decan signification.
