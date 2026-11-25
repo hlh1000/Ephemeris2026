@@ -7,12 +7,14 @@
 <style>
 :root{
   --hue:220;
-  --hue-shift:0deg;
+  --today-hue:255;
   --accent:hsl(var(--hue),72%,46%);
   --accent-deep:hsl(var(--hue),78%,28%);
   --accent-soft:hsla(var(--hue),85%,58%,0.13);
   --accent-border:hsla(var(--hue),75%,55%,0.35);
   --glow:hsla(var(--hue),90%,62%,0.28);
+  --today-bg:hsla(var(--today-hue),78%,60%,0.18);
+  --today-border:hsla(var(--today-hue),75%,50%,0.45);
 }
 *{box-sizing:border-box}
 body{margin:0;padding:10px;min-height:100vh;transition:background .25s ease,color .2s ease}
@@ -25,10 +27,16 @@ body{margin:0;padding:10px;min-height:100vh;transition:background .25s ease,colo
 .tarot-row{padding:5px 9px;border-radius:7px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .tarot-name{font-weight:600}
 .tarot-read{font-family:monospace;font-size:11.5px;opacity:.88}
+.eclipse-banner{
+  display:none;margin:6px 9px 0;padding:5px 9px;border-radius:7px;font-size:12px;
+  align-items:center;justify-content:space-between;gap:8px;font-weight:500;
+}
+.eclipse-banner.open{display:flex}
 .top,.m-bar,.foot{padding:7px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}
 .nav{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
 .cal-btn{margin-left:4px}
-.refresh-btn{margin-left:10px}
+.eclipse-btn{margin-left:8px;padding:3px 6px;font-size:12px;line-height:1.1}
+.refresh-btn{margin-left:4px}
 .m-pills{display:flex;flex-wrap:wrap;gap:4px;padding:4px 7px 7px;margin-top:3px}
 .m-btn{font-size:11px;padding:3px 6px}
 .box{margin:6px}
@@ -38,16 +46,17 @@ th,td{padding:5px 6px}
 .g{width:28px;text-align:center;font-weight:bold}
 .p{font-family:monospace;font-weight:bold}
 .l{font-family:monospace;text-align:right}
+.mode-toggle{cursor:pointer;user-select:none;text-decoration:underline dotted;text-underline-offset:3px}
 .sym-lg{font-size:1.2em;line-height:1;display:inline-block}
 .grid-tbl th .mv-hdr{font-size:1.35em;line-height:1;display:inline-block}
 
-/* Compact second table so all 7 planets + Day fit without horizontal scroll */
+/* Compact second table so all planets (+ Node when toggled) fit without horizontal scroll */
 .grid-tbl{table-layout:fixed;width:100%}
-.grid-tbl th,.grid-tbl td{padding:4px 2px}
+.grid-tbl th,.grid-tbl td{padding:4px 1.5px}
 .grid-tbl th{text-align:left}
 .grid-tbl tbody tr{cursor:pointer}
-.day-col{width:28px;font-family:monospace;font-weight:bold;font-size:11px;text-align:left;white-space:nowrap}
-.cell-val{font-family:Georgia,"Times New Roman",serif;white-space:nowrap;text-align:left;font-size:11px;letter-spacing:-0.2px}
+.day-col{width:25px;font-family:monospace;font-weight:bold;font-size:10.5px;text-align:left;white-space:nowrap}
+.cell-val{font-family:Georgia,"Times New Roman",serif;white-space:nowrap;text-align:left;font-size:10.5px;letter-spacing:-0.25px}
 .sgn{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   font-size:0.65em;line-height:1;vertical-align:super;margin-left:0.5px;font-weight:600;opacity:.86;
@@ -55,6 +64,9 @@ th,td{padding:5px 6px}
 .sgn-tap{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   font-size:0.52em;line-height:1;vertical-align:super;margin-left:1px;font-weight:600;opacity:.9;
+}
+.ecl-sup{
+  font-size:0.75em;line-height:1;vertical-align:super;margin-left:1px;
 }
 .stn{
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
@@ -98,18 +110,19 @@ body.t-minimal .win{
   box-shadow:0 4px 18px rgba(0,0,0,.04),0 0 0 1px hsla(var(--hue),70%,50%,.05);
 }
 body.t-minimal .bar{color:var(--accent-deep);font-weight:600;padding:7px 9px;border-bottom:1px solid var(--accent-soft)}
-body.t-minimal .tarot-row{background:var(--accent-soft);border:1px solid var(--accent-border);color:var(--accent-deep)}
+body.t-minimal .tarot-row,body.t-minimal .eclipse-banner{background:var(--accent-soft);border:1px solid var(--accent-border);color:var(--accent-deep)}
 body.t-minimal .top,.m-bar{padding:7px 9px}
 body.t-minimal .foot{padding:7px 9px;border-top:1px solid var(--accent-soft);font-size:12px;color:#52525b}
 body.t-minimal button,body.t-minimal select{font:500 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#fff;color:#18181b;border:1px solid #d4d4d8;border-radius:6px;padding:4px 8px}
 body.t-minimal button:hover,body.t-minimal select:hover{background:var(--accent-soft);border-color:var(--accent-border)}
-body.t-minimal .m-btn.active,body.t-minimal .cal-m.active,body.t-minimal .cal-d.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px var(--glow)}
+body.t-minimal .m-btn.active,body.t-minimal .cal-m.active,body.t-minimal .cal-d.active,body.t-minimal .eclipse-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px var(--glow)}
 body.t-minimal .cal-pop{background:hsla(var(--hue),45%,98%,.95);border:1px solid var(--accent-border)}
 body.t-minimal .box,body.t-minimal .box-grid{border:1px solid var(--accent-border);border-radius:8px;overflow:hidden}
 body.t-minimal th{background:hsla(var(--hue),55%,96%,.9);color:var(--accent-deep);text-align:left;font-size:11.5px;letter-spacing:.3px;border-bottom:1px solid var(--accent-border)}
 body.t-minimal td{border-bottom:1px solid #f4f4f5}
 body.t-minimal .grid-tbl tr:nth-child(even) td{background:hsla(var(--hue),60%,98%,.7)}
-body.t-minimal tr.tapped-row td{background:var(--accent-soft)}
+body.t-minimal tr.today-row td{background:var(--today-bg)!important;box-shadow:inset 0 1px 0 var(--today-border),inset 0 -1px 0 var(--today-border);font-weight:600}
+body.t-minimal tr.tapped-row td{background:var(--accent-soft)!important}
 body.t-minimal tr:last-child td{border-bottom:none}
 body.t-minimal tr.asc td{background:var(--accent-soft);font-weight:600}
 body.t-minimal .g{color:var(--accent)}
@@ -130,19 +143,20 @@ body.t-ethereal .win{
   box-shadow:0 12px 34px rgba(5,4,14,.72),0 0 22px var(--glow),inset 0 0 26px hsla(var(--hue),85%,70%,.1);
 }
 body.t-ethereal .bar{color:hsl(var(--hue),92%,86%);font-weight:bold;letter-spacing:.8px;padding:7px 9px;border-bottom:1px solid hsla(var(--hue),80%,74%,.22);text-shadow:0 0 10px var(--glow)}
-body.t-ethereal .tarot-row{background:hsla(var(--hue),58%,28%,.45);border:1px solid hsla(var(--hue),85%,74%,.34);color:hsl(calc(var(--hue) + 38),95%,82%)}
+body.t-ethereal .tarot-row,body.t-ethereal .eclipse-banner{background:hsla(var(--hue),58%,28%,.45);border:1px solid hsla(var(--hue),85%,74%,.34);color:hsl(calc(var(--hue) + 38),95%,82%)}
 body.t-ethereal .top,.m-bar{padding:8px 9px}
 body.t-ethereal .foot{padding:7px 9px;border-top:1px solid hsla(var(--hue),80%,74%,.2);font-size:12px;color:hsl(var(--hue),75%,80%)}
 body.t-ethereal button,body.t-ethereal select{font:12px Georgia,serif;background:hsla(var(--hue),46%,26%,.6);color:hsl(var(--hue),90%,94%);border:1px solid hsla(var(--hue),80%,74%,.38);border-radius:8px;padding:4px 8px}
 body.t-ethereal button:hover,body.t-ethereal select:hover{background:hsla(var(--hue),58%,36%,.75);box-shadow:0 0 10px var(--glow)}
-body.t-ethereal .m-btn.active,body.t-ethereal .cal-m.active,body.t-ethereal .cal-d.active{background:hsla(var(--hue),85%,62%,.34);border-color:hsl(calc(var(--hue) + 38),95%,78%);color:hsl(calc(var(--hue) + 38),95%,82%);box-shadow:0 0 12px var(--glow)}
+body.t-ethereal .m-btn.active,body.t-ethereal .cal-m.active,body.t-ethereal .cal-d.active,body.t-ethereal .eclipse-btn.active{background:hsla(var(--hue),85%,62%,.34);border-color:hsl(calc(var(--hue) + 38),95%,78%);color:hsl(calc(var(--hue) + 38),95%,82%);box-shadow:0 0 12px var(--glow)}
 body.t-ethereal select option{background:hsl(var(--hue),45%,15%);color:#f3e8ff}
 body.t-ethereal .cal-pop{background:hsla(var(--hue),45%,11%,.88);border:1px solid hsla(var(--hue),80%,74%,.3)}
 body.t-ethereal .box,body.t-ethereal .box-grid{background:hsla(var(--hue),46%,9%,.64);border:1px solid hsla(var(--hue),80%,74%,.26);border-radius:10px}
 body.t-ethereal th{background:hsla(var(--hue),52%,30%,.42);color:hsl(var(--hue),92%,88%);text-align:left;font-size:12px;letter-spacing:.4px;border-bottom:1px solid hsla(var(--hue),80%,74%,.26)}
 body.t-ethereal td{border-bottom:1px solid hsla(var(--hue),70%,74%,.12)}
 body.t-ethereal .grid-tbl tr:nth-child(even) td{background:hsla(var(--hue),80%,70%,.05)}
-body.t-ethereal tr.tapped-row td{background:hsla(var(--hue),85%,68%,.16)}
+body.t-ethereal tr.today-row td{background:hsla(var(--today-hue),82%,58%,.24)!important;box-shadow:inset 0 1px 0 hsla(var(--today-hue),90%,75%,.45),inset 0 -1px 0 hsla(var(--today-hue),90%,75%,.45);font-weight:bold}
+body.t-ethereal tr.tapped-row td{background:hsla(var(--hue),85%,68%,.22)!important}
 body.t-ethereal tr:last-child td{border-bottom:none}
 body.t-ethereal tr.asc td{background:hsla(var(--hue),85%,68%,.18);font-weight:bold}
 body.t-ethereal .g{color:hsl(var(--hue),90%,84%);text-shadow:0 0 8px var(--glow)}
@@ -153,12 +167,12 @@ body.t-ethereal .l{color:hsl(calc(var(--hue) - 24),85%,80%)}
 body.t-win98{background:hsl(var(--hue),42%,38%);font:13px Tahoma,Arial,sans-serif;color:#000}
 body.t-win98 .win{background:#c0c0c0;border:2px solid;border-color:#fff #000 #000 #fff;padding:2px}
 body.t-win98 .bar{background:linear-gradient(90deg,hsl(var(--hue),90%,24%),hsl(var(--hue),82%,46%));color:#fff;font-weight:bold;padding:4px 6px}
-body.t-win98 .tarot-row{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;border-radius:0;color:#000}
+body.t-win98 .tarot-row,body.t-win98 .eclipse-banner{background:#fff;border:2px solid;border-color:#808080 #fff #fff #808080;border-radius:0;color:#000}
 body.t-win98 .top,.m-bar{border-bottom:1px solid #808080}
 body.t-win98 .foot{border-top:1px solid #808080;font-size:12px}
 body.t-win98 button,body.t-win98 select{font:bold 12px Tahoma,Arial,sans-serif;background:#c0c0c0;color:#000;border:2px solid;border-color:#fff #000 #000 #fff;padding:3px 7px}
 body.t-win98 .m-btn,body.t-win98 .cal-m,body.t-win98 .cal-d{font-weight:normal}
-body.t-win98 .m-btn.active,body.t-win98 .cal-m.active,body.t-win98 .cal-d.active{background:hsl(var(--hue),88%,26%);color:#fff;border-color:#000 #fff #fff #000}
+body.t-win98 .m-btn.active,body.t-win98 .cal-m.active,body.t-win98 .cal-d.active,body.t-win98 .eclipse-btn.active{background:hsl(var(--hue),88%,26%);color:#fff;border-color:#000 #fff #fff #000}
 body.t-win98 select{background:#fff;border-color:#808080 #fff #fff #808080;font-weight:normal;padding:3px 4px}
 body.t-win98 button:active{border-color:#000 #fff #fff #000}
 body.t-win98 .cal-pop{background:#c0c0c0;border:2px solid;border-color:#808080 #fff #fff #808080;border-radius:0}
@@ -166,7 +180,8 @@ body.t-win98 .box,body.t-win98 .box-grid{background:#fff;border:2px solid;border
 body.t-win98 th{background:hsl(var(--hue),88%,26%);color:#fff;text-align:left;border:1px solid hsl(var(--hue),80%,32%);font-size:12px}
 body.t-win98 td{border:1px solid hsl(var(--hue),65%,36%)}
 body.t-win98 tr:nth-child(even) td{background:hsl(var(--hue),85%,96%)}
-body.t-win98 tr.tapped-row td{background:hsl(var(--hue),85%,89%)}
+body.t-win98 tr.today-row td{background:hsla(var(--today-hue),85%,84%,.85)!important;font-weight:bold}
+body.t-win98 tr.tapped-row td{background:hsl(var(--hue),85%,89%)!important}
 body.t-win98 tr:last-child td{border-bottom:none}
 body.t-win98 tr.asc td{background:hsl(var(--hue),85%,91%);font-weight:bold}
 body.t-win98 .g{color:hsl(var(--hue),90%,26%)}
@@ -177,16 +192,16 @@ body.t-win98 .l{color:hsl(var(--hue),35%,32%)}
 body.slider-default.t-minimal{background:#f6f7f9}
 body.slider-default.t-minimal .win{background:#fff;border:1px solid #e4e4e7;box-shadow:0 2px 10px rgba(0,0,0,.04);backdrop-filter:none}
 body.slider-default.t-minimal .bar{color:#18181b;border-bottom:1px solid #f0f0f2}
-body.slider-default.t-minimal .tarot-row{background:#fafafa;border:1px solid #e4e4e7;color:#18181b}
+body.slider-default.t-minimal .tarot-row,body.slider-default.t-minimal .eclipse-banner{background:#fafafa;border:1px solid #e4e4e7;color:#18181b}
 body.slider-default.t-minimal .foot{border-top:1px solid #f0f0f2;color:#71717a}
 body.slider-default.t-minimal button:hover,body.slider-default.t-minimal select:hover{background:#f4f4f5;border-color:#d4d4d8}
-body.slider-default.t-minimal .m-btn.active,body.slider-default.t-minimal .cal-m.active,body.slider-default.t-minimal .cal-d.active{background:#18181b;border-color:#18181b;box-shadow:none}
+body.slider-default.t-minimal .m-btn.active,body.slider-default.t-minimal .cal-m.active,body.slider-default.t-minimal .cal-d.active,body.slider-default.t-minimal .eclipse-btn.active{background:#18181b;border-color:#18181b;box-shadow:none}
 body.slider-default.t-minimal .cal-pop{background:#fafafa;border:1px solid #e4e4e7}
 body.slider-default.t-minimal .box,body.slider-default.t-minimal .box-grid{border:1px solid #e4e4e7}
 body.slider-default.t-minimal th{background:#fafafa;color:#52525b;border-bottom:1px solid #e4e4e7}
 body.slider-default.t-minimal td{border-bottom:1px solid #f4f4f5}
 body.slider-default.t-minimal .grid-tbl tr:nth-child(even) td{background:#fcfcfd}
-body.slider-default.t-minimal tr.tapped-row td{background:#f4f4f5}
+body.slider-default.t-minimal tr.tapped-row td{background:#f4f4f5!important}
 body.slider-default.t-minimal tr.asc td{background:#f8fafc}
 body.slider-default.t-minimal .g{color:#3f3f46}
 body.slider-default.t-minimal .p{color:#111827}
@@ -195,18 +210,18 @@ body.slider-default.t-minimal .l{color:#71717a}
 body.slider-default.t-ethereal{background:radial-gradient(circle at top,#241d42 0%,#120f24 60%,#0a0814 100%);color:#ece7ff}
 body.slider-default.t-ethereal .win{background:rgba(30,25,56,.82);border:1px solid rgba(196,181,253,.32);box-shadow:0 10px 30px rgba(8,5,20,.65),inset 0 0 24px rgba(167,139,250,.08);backdrop-filter:none}
 body.slider-default.t-ethereal .bar{color:#e9d5ff;border-bottom:1px solid rgba(196,181,253,.2);text-shadow:none}
-body.slider-default.t-ethereal .tarot-row{background:rgba(67,56,118,.45);border:1px solid rgba(196,181,253,.32);color:#fde68a}
+body.slider-default.t-ethereal .tarot-row,body.slider-default.t-ethereal .eclipse-banner{background:rgba(67,56,118,.45);border:1px solid rgba(196,181,253,.32);color:#fde68a}
 body.slider-default.t-ethereal .foot{border-top:1px solid rgba(196,181,253,.18);color:#c4b5fd}
 body.slider-default.t-ethereal button,body.slider-default.t-ethereal select{background:rgba(67,56,118,.55);color:#f3e8ff;border:1px solid rgba(196,181,253,.38)}
 body.slider-default.t-ethereal button:hover,body.slider-default.t-ethereal select:hover{background:rgba(67,56,118,.75);box-shadow:none}
-body.slider-default.t-ethereal .m-btn.active,body.slider-default.t-ethereal .cal-m.active,body.slider-default.t-ethereal .cal-d.active{background:rgba(167,139,250,.35);border-color:#fde68a;color:#fde68a;box-shadow:none}
+body.slider-default.t-ethereal .m-btn.active,body.slider-default.t-ethereal .cal-m.active,body.slider-default.t-ethereal .cal-d.active,body.slider-default.t-ethereal .eclipse-btn.active{background:rgba(167,139,250,.35);border-color:#fde68a;color:#fde68a;box-shadow:none}
 body.slider-default.t-ethereal select option{background:#1c1638;color:#f3e8ff}
 body.slider-default.t-ethereal .cal-pop{background:rgba(20,16,40,.88);border:1px solid rgba(196,181,253,.28)}
 body.slider-default.t-ethereal .box,body.slider-default.t-ethereal .box-grid{background:rgba(17,13,34,.6);border:1px solid rgba(196,181,253,.24)}
 body.slider-default.t-ethereal th{background:rgba(91,72,158,.38);color:#e9d5ff;border-bottom:1px solid rgba(196,181,253,.25)}
 body.slider-default.t-ethereal td{border-bottom:1px solid rgba(196,181,253,.12)}
 body.slider-default.t-ethereal .grid-tbl tr:nth-child(even) td{background:rgba(167,139,250,.05)}
-body.slider-default.t-ethereal tr.tapped-row td{background:rgba(167,139,250,.15)}
+body.slider-default.t-ethereal tr.tapped-row td{background:rgba(167,139,250,.18)!important}
 body.slider-default.t-ethereal tr.asc td{background:rgba(167,139,250,.16)}
 body.slider-default.t-ethereal .g{color:#e9d5ff;text-shadow:none}
 body.slider-default.t-ethereal .p{color:#fde68a}
@@ -214,17 +229,18 @@ body.slider-default.t-ethereal .l{color:#a5b4fc}
 
 body.slider-default.t-win98{background:#3a6ea5;color:#000}
 body.slider-default.t-win98 .bar{background:linear-gradient(90deg,#000080,#1084d0)}
-body.slider-default.t-win98 .m-btn.active,body.slider-default.t-win98 .cal-m.active,body.slider-default.t-win98 .cal-d.active{background:#000080;border-color:#000 #fff #fff #000}
+body.slider-default.t-win98 .m-btn.active,body.slider-default.t-win98 .cal-m.active,body.slider-default.t-win98 .cal-d.active,body.slider-default.t-win98 .eclipse-btn.active{background:#000080;border-color:#000 #fff #fff #000}
 body.slider-default.t-win98 th{background:#000080;border:1px solid #003399}
 body.slider-default.t-win98 td{border:1px solid #003399}
 body.slider-default.t-win98 tr:nth-child(even) td{background:#eef4ff}
-body.slider-default.t-win98 tr.tapped-row td{background:#d4e4ff}
+body.slider-default.t-win98 tr.tapped-row td{background:#d4e4ff!important}
 body.slider-default.t-win98 tr.asc td{background:#dce8ff}
 body.slider-default.t-win98 .g{color:#000080}
 body.slider-default.t-win98 .p{color:#001a66}
 body.slider-default.t-win98 .l{color:#334466}
 </style>
 </head>
+
 
 <body class="t-minimal slider-default">
 <div class="stack">
@@ -236,6 +252,10 @@ body.slider-default.t-win98 .l{color:#334466}
       <button id="tarotBtn" type="button">Tarot</button>
     </div>
     <div id="tarotList" class="tarot-list" aria-live="polite"></div>
+    <div id="eclipseBanner" class="eclipse-banner" aria-live="polite">
+      <span id="eclipseText"></span>
+      <span id="eclipseLocalTime" style="font-family:monospace;font-size:11px"></span>
+    </div>
     <div class="top">
       <span id="t">Loading WASM...</span>
       <div class="nav">
@@ -247,6 +267,7 @@ body.slider-default.t-win98 .l{color:#334466}
         </select>
         <button id="nextBtn" type="button" title="Step Forward">▶</button>
         <button id="calToggleBtn" class="cal-btn" type="button" title="Pick Day, Month & Year">Cal</button>
+        <button id="eclipseBtn" class="eclipse-btn" type="button" title="Toggle Eclipse & North Node View" aria-pressed="false">🌔</button>
         <button id="nowBtn" class="refresh-btn" type="button">Refresh</button>
       </div>
     </div>
@@ -262,7 +283,14 @@ body.slider-default.t-win98 .l{color:#334466}
 
     <div class="box">
       <table>
-        <thead><tr><th class="g">#</th><th>Planet</th><th>Position</th><th style="text-align:right">Speed/d</th></tr></thead>
+        <thead>
+          <tr>
+            <th class="g">#</th>
+            <th>Planet</th>
+            <th>Position</th>
+            <th id="modeColHdr" class="mode-toggle" style="text-align:right" title="Tap to toggle Speed / Decan / Tarot Card">Speed/d</th>
+          </tr>
+        </thead>
         <tbody id="r"><tr><td colspan="4">Initializing Swiss Ephemeris...</td></tr></tbody>
       </table>
     </div>
@@ -291,18 +319,7 @@ body.slider-default.t-win98 .l{color:#334466}
     <div id="monthPills" class="m-pills"></div>
     <div class="box-grid">
       <table class="grid-tbl">
-        <thead>
-          <tr>
-            <th class="day-col">Day</th>
-            <th class="cell-val"><span class="sym-lg">☉</span></th>
-            <th class="cell-val"><span class="sym-lg">☽</span></th>
-            <th class="cell-val">☿</th>
-            <th class="cell-val"><span class="mv-hdr">♀</span></th>
-            <th class="cell-val"><span class="mv-hdr">♂</span></th>
-            <th class="cell-val">♃</th>
-            <th class="cell-val">♄</th>
-          </tr>
-        </thead>
+        <thead id="gridHead"></thead>
         <tbody id="mr"><tr><td colspan="8">Waiting for ephemeris...</td></tr></tbody>
       </table>
     </div>
@@ -310,12 +327,17 @@ body.slider-default.t-win98 .l{color:#334466}
 
 </div>
 
+
 <script type="module">
 import SwissEph from 'https://cdn.jsdelivr.net/gh/prolaxu/swisseph-wasm@0.1.0/src/swisseph.js';
 
 const SIGN_ABBR = [
   "Ari","Taur","Gmn","Can","Leo","Vir",
   "Lbr","Scr","Sag","Cap","Aqu","Pisc"
+];
+const SIGN_FULL = [
+  "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
+  "Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"
 ];
 const MONTH_NAMES = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 const MIN_YEAR = 1900;
@@ -352,6 +374,13 @@ const DECAN_MAP = {
   "Swords:8": "Gemini 1", "Swords:9": "Gemini 2", "Swords:10": "Gemini 3",
   "Disks:8":  "Virgo 1",  "Disks:9":  "Virgo 2",  "Disks:10": "Virgo 3"
 };
+
+// Reverse lookup: "Aries 2" -> "3 of Wands"
+const DECAN_TO_CARD = {};
+for (const [key, decanLabel] of Object.entries(DECAN_MAP)) {
+  const [suitKey, rank] = key.split(":");
+  DECAN_TO_CARD[decanLabel] = `${rank} of ${suitKey}`;
+}
 
 function build78Deck() {
   const deck = MAJOR_ARCANA.map(name => ({ name, read: "" }));
@@ -414,7 +443,7 @@ function appendTarotRow(card) {
 const swe = new SwissEph();
 await swe.initSwissEph();
 
-const BODIES = [
+const BASE_BODIES = [
   ["Sun", "☉", swe.SE_SUN],
   ["Moon", "☽", swe.SE_MOON],
   ["Mercury", "☿", swe.SE_MERCURY],
@@ -423,6 +452,8 @@ const BODIES = [
   ["Jupiter", "♃", swe.SE_JUPITER],
   ["Saturn", "♄", swe.SE_SATURN]
 ];
+const NODE_ID = swe.SE_TRUE_NODE ?? swe.SE_MEAN_NODE ?? 11;
+const NODE_BODY = ["North Node", "☊", NODE_ID];
 const LARGE_GLYPHS = new Set(["☉", "♂", "♀"]);
 
 function formatGlyph(glyph) {
@@ -433,6 +464,10 @@ const MONTH_OFFSETS = [-6, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5];
 const rad = d => (d * Math.PI) / 180;
 const deg = r => (r * 180) / Math.PI;
 const n360 = d => ((d % 360) + 360) % 360;
+const angDiff = (a, b) => {
+  const d = Math.abs(n360(a) - n360(b));
+  return d > 180 ? 360 - d : d;
+};
 
 let coords = { lat: 34.1478, lon: -118.1445 };
 let viewDate = new Date();
@@ -443,6 +478,18 @@ let selectedMonthOffset = 0;
 let currentTheme = "t-minimal";
 let lastTapTime = 0;
 let tappedDay = null;
+let eclipseMode = false;
+let colMode = "speed"; // "speed" | "decan" | "card"
+let randomTodayOffset = Math.floor(Math.random() * 75) + 28; // harmonious offset 28..102 deg
+
+function activeGridBodies() {
+  return eclipseMode ? [...BASE_BODIES, NODE_BODY] : BASE_BODIES;
+}
+
+function updateTodayColor(baseHue) {
+  const harmoniousHue = (Number(baseHue) + randomTodayOffset) % 360;
+  document.documentElement.style.setProperty("--today-hue", String(harmoniousHue));
+}
 
 function clampYear(y) {
   return Math.max(MIN_YEAR, Math.min(MAX_YEAR, Number(y) || new Date().getUTCFullYear()));
@@ -464,11 +511,9 @@ function setHue(val) {
   const cleanVal = Math.max(0, Math.min(360, Number(val) || 0));
   const slider = document.getElementById("hueSlider");
   slider.value = String(cleanVal);
-  if (cleanVal === 0) {
-    document.documentElement.style.setProperty("--hue", "220");
-  } else {
-    document.documentElement.style.setProperty("--hue", String(cleanVal));
-  }
+  const effectiveHue = cleanVal === 0 ? 220 : cleanVal;
+  document.documentElement.style.setProperty("--hue", String(effectiveHue));
+  updateTodayColor(effectiveHue);
   applyClasses();
   try { localStorage.setItem("planets_hue", String(cleanVal)); } catch (e) {}
 }
@@ -527,26 +572,149 @@ function splitLon(lon) {
   const arcmin = totalArcmin % 60;
   const degInSign = degInZodiac % 30;
   const signIdx = Math.floor(degInZodiac / 30);
-  return { degInSign, arcmin, signIdx, abbr: SIGN_ABBR[signIdx] };
+  const decanNum = Math.floor(degInSign / 10) + 1; // 1, 2, or 3
+  return {
+    degInSign,
+    arcmin,
+    signIdx,
+    abbr: SIGN_ABBR[signIdx],
+    fullSign: SIGN_FULL[signIdx],
+    decanNum
+  };
 }
 
-function fmtFull(lon) {
+// Swapped format: Sign name first, then degree & arcminutes
+function fmtSwapped(lon) {
   const { degInSign, arcmin, abbr } = splitLon(lon);
-  return `${String(degInSign).padStart(2, "0")}°${String(arcmin).padStart(2, "0")}′ ${abbr}`;
+  return `${abbr} ${String(degInSign).padStart(2, "0")}°${String(arcmin).padStart(2, "0")}′`;
 }
 
 function fmtSpeed(sp) {
   return (sp >= 0 ? "+" : "") + sp.toFixed(2) + "°/d";
 }
 
+function fmtDecan(lon) {
+  const { fullSign, decanNum } = splitLon(lon);
+  return `${fullSign} ${decanNum}`;
+}
+
+function fmtCardForLon(lon) {
+  const decanLabel = fmtDecan(lon);
+  return DECAN_TO_CARD[decanLabel] || "—";
+}
+
+// High-precision syzygy + nodal latitude check for Solar & Lunar eclipses
+function evalEclipseState(dt) {
+  const jd = toJulianGMT(dt);
+  const flags = swe.SEFLG_SWIEPH || 0;
+  const sun = swe.calc_ut(jd, swe.SE_SUN, flags);
+  const moon = swe.calc_ut(jd, swe.SE_MOON, flags);
+  const phase = n360(moon[0] - sun[0]); // 0 = New Moon, 180 = Full Moon
+  const moonLat = Math.abs(moon[1] || 0);
+
+  const distNew = phase > 180 ? 360 - phase : phase;
+  const distFull = Math.abs(phase - 180);
+
+  // Solar eclipse occurs near New Moon when Moon's ecliptic latitude <= ~1.58°
+  if (distNew <= 16 && moonLat <= 1.58) {
+    return { type: "solar", emoji: "🌑", distDeg: distNew };
+  }
+  // Lunar eclipse occurs near Full Moon when Moon's ecliptic latitude <= ~1.05°
+  if (distFull <= 13 && moonLat <= 1.05) {
+    return { type: "lunar", emoji: "🌕", distDeg: distFull };
+  }
+  return null;
+}
+
+// Find exact peak syzygy timestamp within +/- 3.2 days of targetDt if an eclipse occurs
+function findNearbyEclipse(targetDt) {
+  const stepMs = 2 * 3600 * 1000; // 2-hour scan across +/- 3.2 days
+  const windowMs = 3.2 * 86400 * 1000;
+  let best = null;
+
+  for (let offset = -windowMs; offset <= windowMs; offset += stepMs) {
+    const probe = new Date(targetDt.getTime() + offset);
+    const st = evalEclipseState(probe);
+    if (st) {
+      if (!best || st.distDeg < best.distDeg) {
+        best = { ...st, time: probe };
+      }
+    }
+  }
+
+  if (!best) return null;
+
+  // Refine peak within +/- 2 hours to the nearest 5 minutes
+  let refined = best;
+  for (let m = -120; m <= 120; m += 5) {
+    const probe = new Date(best.time.getTime() + m * 60000);
+    const st = evalEclipseState(probe);
+    if (st && st.distDeg < refined.distDeg) {
+      refined = { ...st, time: probe };
+    }
+  }
+
+  if (Math.abs(refined.time.getTime() - targetDt.getTime()) <= 3 * 86400 * 1000) {
+    return refined;
+  }
+  return null;
+}
+
+// Check if an eclipse happens on a specific UTC calendar day (for the Ephemeris table)
+function findDayEclipse(year, month, day) {
+  let best = null;
+  for (let h = 0; h < 24; h += 3) {
+    const probe = new Date(Date.UTC(year, month, day, h, 0, 0));
+    const st = evalEclipseState(probe);
+    if (st && (!best || st.distDeg < best.distDeg)) {
+      best = st;
+    }
+  }
+  return best;
+}
+
+function updateEclipseBanner() {
+  const banner = document.getElementById("eclipseBanner");
+  if (!eclipseMode) {
+    banner.classList.remove("open");
+    return;
+  }
+  const near = findNearbyEclipse(viewDate);
+  if (!near) {
+    banner.classList.remove("open");
+    return;
+  }
+  const label = near.type === "solar" ? "Solar Eclipse" : "Lunar Eclipse";
+  document.getElementById("eclipseText").textContent = `${near.emoji} ${label}`;
+  document.getElementById("eclipseLocalTime").textContent = near.time.toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
+  banner.classList.add("open");
+}
+
+function updateModeHeader() {
+  const hdr = document.getElementById("modeColHdr");
+  if (colMode === "speed") hdr.textContent = "Speed/d";
+  else if (colMode === "decan") hdr.textContent = "Decan";
+  else hdr.textContent = "Tarot Card";
+}
+
 function buildPrimaryRows(dt) {
   const jd = toJulianGMT(dt);
   const flags = (swe.SEFLG_SWIEPH || 0) | (swe.SEFLG_SPEED || 0);
-  return BODIES.map(([name, glyph, bodyId]) => {
+  return BASE_BODIES.map(([name, glyph, bodyId]) => {
     const res = swe.calc_ut(jd, bodyId, flags);
     const lon = n360(res[0]);
     const speed = typeof res[3] === "number" ? res[3] : 0;
-    return `<tr><td class="g">${formatGlyph(glyph)}</td><td><b>${name}</b></td><td class="p">${fmtFull(lon)}</td><td class="l">${fmtSpeed(speed)}</td></tr>`;
+    let rightCol = fmtSpeed(speed);
+    if (colMode === "decan") rightCol = fmtDecan(lon);
+    else if (colMode === "card") rightCol = fmtCardForLon(lon);
+
+    return `<tr><td class="g">${formatGlyph(glyph)}</td><td><b>${name}</b></td><td class="p">${fmtSwapped(lon)}</td><td class="l">${rightCol}</td></tr>`;
   }).join("");
 }
 
@@ -562,20 +730,42 @@ function offsetLabel(offset) {
   return labelDt.toLocaleDateString([], { month: "short", year: "2-digit", timeZone: "UTC" });
 }
 
+function renderGridHeader() {
+  const bodies = activeGridBodies();
+  const cols = bodies.map(([, glyph]) => {
+    if (glyph === "☉" || glyph === "☽") {
+      return `<th class="cell-val"><span class="sym-lg">${glyph}</span></th>`;
+    }
+    if (glyph === "♀" || glyph === "♂") {
+      return `<th class="cell-val"><span class="mv-hdr">${glyph}</span></th>`;
+    }
+    return `<th class="cell-val">${glyph}</th>`;
+  }).join("");
+  document.getElementById("gridHead").innerHTML = `<tr><th class="day-col">Day</th>${cols}</tr>`;
+}
+
 function buildMonthGridRows(offset) {
   const { year, month } = monthTargetYearMonth(offset);
   const daysInMonth = new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
   const flags = (swe.SEFLG_SWIEPH || 0) | (swe.SEFLG_SPEED || 0);
-  const prevSigns = Array(BODIES.length).fill(null);
-  const prevSpeeds = Array(BODIES.length).fill(null);
+  const bodies = activeGridBodies();
+  const prevSigns = Array(bodies.length).fill(null);
+  const prevSpeeds = Array(bodies.length).fill(null);
   const rows = [];
+
+  const nowLocal = new Date();
+  const todayY = nowLocal.getFullYear();
+  const todayM = nowLocal.getMonth();
+  const todayD = nowLocal.getDate();
 
   for (let day = 1; day <= daysInMonth; day++) {
     const dayDt = new Date(Date.UTC(year, month, day, 0, 0, 0));
     const jd = toJulianGMT(dayDt);
     const isTappedRow = tappedDay === day;
+    const isTodayRow = year === todayY && month === todayM && day === todayD;
+    const dayEclipse = eclipseMode ? findDayEclipse(year, month, day) : null;
 
-    const cells = BODIES.map(([, glyph, bodyId], idx) => {
+    const cells = bodies.map(([, glyph, bodyId], idx) => {
       const res = swe.calc_ut(jd, bodyId, flags);
       const { degInSign, signIdx, abbr } = splitLon(res[0]);
       const speed = typeof res[3] === "number" ? res[3] : 0;
@@ -600,11 +790,20 @@ function buildMonthGridRows(offset) {
         supHtml = `<span class="sgn">${abbr}</span>`;
       }
 
-      return `<td class="cell-val">${degInSign}${supHtml}${stationMarker}</td>`;
+      const eclipseSup = (glyph === "☽" && dayEclipse)
+        ? `<span class="ecl-sup">${dayEclipse.emoji}</span>`
+        : "";
+
+      return `<td class="cell-val">${degInSign}${supHtml}${eclipseSup}${stationMarker}</td>`;
     }).join("");
 
+    const rowClasses = [
+      isTodayRow ? "today-row" : "",
+      isTappedRow ? "tapped-row" : ""
+    ].filter(Boolean).join(" ");
+
     rows.push(
-      `<tr data-day="${day}" class="${isTappedRow ? "tapped-row" : ""}">` +
+      `<tr data-day="${day}" class="${rowClasses}">` +
         `<td class="day-col">${String(day).padStart(2, "0")}</td>${cells}` +
       `</tr>`
     );
@@ -715,8 +914,22 @@ function renderMonthModule() {
   document.getElementById("mDateLabel").textContent =
     headingDt.toLocaleDateString([], { month: "long", year: "numeric", timeZone: "UTC" });
 
+  renderGridHeader();
   document.getElementById("mr").innerHTML = buildMonthGridRows(selectedMonthOffset);
   bindGridRowTapHandlers();
+}
+
+function renderPrimaryOnly() {
+  updateModeHeader();
+  const planetRows = buildPrimaryRows(viewDate);
+  const ascLon = ascendantGMT(viewDate, coords.lat, coords.lon);
+  let ascRight = "—";
+  if (colMode === "decan") ascRight = fmtDecan(ascLon);
+  else if (colMode === "card") ascRight = fmtCardForLon(ascLon);
+
+  const ascRow = `<tr class="asc"><td class="g">↑</td><td>Rising (ASC)</td><td class="p">${fmtSwapped(ascLon)}</td><td class="l">${ascRight}</td></tr>`;
+  document.getElementById("r").innerHTML = planetRows + ascRow;
+  updateEclipseBanner();
 }
 
 function renderAll() {
@@ -730,11 +943,7 @@ function renderAll() {
     }) + " (GMT: " +
     viewDate.toISOString().slice(11, 16) + ")";
 
-  const planetRows = buildPrimaryRows(viewDate);
-  const ascLon = ascendantGMT(viewDate, coords.lat, coords.lon);
-  const ascRow = `<tr class="asc"><td class="g">↑</td><td>Rising (ASC)</td><td class="p">${fmtFull(ascLon)}</td><td class="l">—</td></tr>`;
-  document.getElementById("r").innerHTML = planetRows + ascRow;
-
+  renderPrimaryOnly();
   renderCalendarMenu();
   renderMonthModule();
 }
@@ -753,6 +962,9 @@ function resetNow() {
   calMonth = viewDate.getUTCMonth();
   gridYear = viewDate.getUTCFullYear();
   tappedDay = null;
+  randomTodayOffset = Math.floor(Math.random() * 75) + 28;
+  const currentHue = Number(document.getElementById("hueSlider").value) || 220;
+  updateTodayColor(currentHue);
   document.getElementById("tarotList").dataset.exhausted = "0";
   resetTarotDeck();
   renderAll();
@@ -777,6 +989,21 @@ document.addEventListener("click", e => {
 
 document.getElementById("tarotBtn").addEventListener("click", () => {
   appendTarotRow(drawTarotCard());
+});
+
+document.getElementById("eclipseBtn").addEventListener("click", e => {
+  eclipseMode = !eclipseMode;
+  e.currentTarget.classList.toggle("active", eclipseMode);
+  e.currentTarget.setAttribute("aria-pressed", String(eclipseMode));
+  updateEclipseBanner();
+  renderMonthModule();
+});
+
+document.getElementById("modeColHdr").addEventListener("click", () => {
+  if (colMode === "speed") colMode = "decan";
+  else if (colMode === "decan") colMode = "card";
+  else colMode = "speed";
+  renderPrimaryOnly();
 });
 
 const hueSliderEl = document.getElementById("hueSlider");
