@@ -28,13 +28,14 @@ body{margin:0;padding:10px;min-height:100vh;transition:background .25s ease,colo
 }
 .win .box,.win .box-grid,.win .cal-pop,.win .tarot-row,.win .eclipse-banner,.win .lunar-box{
   border-radius:calc(max(0, var(--radius) - 4) * 1px);
+  overflow:hidden;
 }
 .win button,.win select{
   border-radius:calc(max(0, var(--radius) - 6) * 1px);
 }
 
 .bar{display:flex;justify-content:space-between;align-items:center}
-.sub-bar{padding:5px 9px 0;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.sub-bar{padding:5px 9px 0;display:flex;align-items:center;justify-content:flex-start;gap:6px}
 .tarot-list{display:none;flex-direction:column;gap:4px;margin:6px 9px 0}
 .tarot-list.open{display:flex}
 .tarot-row{padding:5px 9px;font-size:12.5px;display:flex;justify-content:space-between;align-items:center;gap:8px}
@@ -54,23 +55,34 @@ body{margin:0;padding:10px;min-height:100vh;transition:background .25s ease,colo
   display:flex;flex-direction:column;align-items:center;justify-content:center;
   padding:8px 6px 10px;border-bottom:1px solid var(--accent-border);margin-bottom:6px;
 }
-.lunar-pair{display:flex;align-items:center;justify-content:center;gap:18px;line-height:1}
-.lunar-big-glyph{font-size:44px;line-height:1;font-weight:bold}
+.lunar-pair{display:flex;align-items:center;justify-content:center;gap:14px;line-height:1}
+.lunar-big-glyph{font-size:44px;line-height:1;font-weight:bold;position:relative;display:inline-block}
+.lunar-big-sup{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:12px;font-weight:700;vertical-align:super;margin-left:2px;letter-spacing:-0.2px;
+}
+.lunar-voc-row{display:flex;align-items:center;justify-content:center;gap:10px;line-height:1}
+.lunar-voc-text{font-size:14px;font-weight:700;letter-spacing:.3px}
 .lunar-hero-label{margin-top:6px;font-size:12.5px;font-weight:700;letter-spacing:.4px}
-.lunar-hero-hrs{margin-top:2px;font-family:monospace;font-size:11px;opacity:.88}
+.lunar-hero-time{margin-top:2px;font-family:monospace;font-size:11px;opacity:.88}
 .lunar-list{display:flex;flex-direction:column;gap:4px}
 .lunar-item{
-  display:grid;grid-template-columns:26px 1fr auto 26px;align-items:center;gap:6px;
+  display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:6px;
   padding:3px 4px;font-size:12px;
 }
-.lunar-item-g{text-align:center;font-weight:bold;font-size:15px}
-.lunar-item-desc{text-align:center;font-size:11.5px;opacity:.95}
-.lunar-item-hrs{font-family:monospace;font-size:11px;opacity:.85;text-align:right;white-space:nowrap}
+.lunar-item-left{display:flex;align-items:center;justify-content:flex-start;gap:6px;white-space:nowrap}
+.lunar-item-g{font-weight:bold;font-size:15px;line-height:1}
+.lunar-item-sup{
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+  font-size:9.5px;font-weight:700;vertical-align:super;margin-left:1px;opacity:.92;
+}
+.lunar-item-desc{text-align:center;font-size:11.5px;opacity:.95;white-space:nowrap}
+.lunar-item-time{font-family:monospace;font-size:10.5px;opacity:.86;text-align:right;white-space:nowrap}
 
 .top,.m-bar,.foot{padding:7px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}
 .nav{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
 .cal-btn{margin-left:4px}
-.refresh-btn{margin-left:10px}
+.refresh-btn{margin-left:8px}
 .m-pills{display:flex;flex-wrap:wrap;gap:4px;padding:4px 7px 7px;margin-top:3px}
 .m-btn{font-size:11px;padding:3px 6px}
 .box{margin:6px}
@@ -155,9 +167,9 @@ body.t-minimal .top,.m-bar{padding:7px 9px}
 body.t-minimal .foot{padding:7px 9px;border-top:1px solid var(--accent-soft);font-size:12px;color:#52525b}
 body.t-minimal button,body.t-minimal select{font:500 12px -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#fff;color:#18181b;border:1px solid #d4d4d8;padding:4px 8px}
 body.t-minimal button:hover,body.t-minimal select:hover{background:var(--accent-soft);border-color:var(--accent-border)}
-body.t-minimal .m-btn.active,body.t-minimal .cal-m.active,body.t-minimal .cal-d.active,body.t-minimal .eclipse-btn.active,body.t-minimal .theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px var(--glow)}
+body.t-minimal .m-btn.active,body.t-minimal .cal-m.active,body.t-minimal .cal-d.active,body.t-minimal .eclipse-btn.active,body.t-minimal .lunar-btn.active,body.t-minimal .theme-btn.active{background:var(--accent);color:#fff;border-color:var(--accent);box-shadow:0 2px 8px var(--glow)}
 body.t-minimal .cal-pop{background:hsla(var(--hue),45%,98%,.95);border:1px solid var(--accent-border)}
-body.t-minimal .box,body.t-minimal .box-grid{border:1px solid var(--accent-border);overflow:hidden}
+body.t-minimal .box,body.t-minimal .box-grid{border:1px solid var(--accent-border)}
 body.t-minimal th{background:hsla(var(--hue),55%,96%,.9);color:var(--accent-deep);text-align:left;font-size:11.5px;letter-spacing:.3px;border-bottom:1px solid var(--accent-border)}
 body.t-minimal td{border-bottom:1px solid #f4f4f5}
 body.t-minimal .grid-tbl tr:nth-child(even) td{background:hsla(var(--hue),60%,98%,.7)}
@@ -188,7 +200,7 @@ body.t-ethereal .top,.m-bar{padding:8px 9px}
 body.t-ethereal .foot{padding:7px 9px;border-top:1px solid hsla(var(--hue),80%,74%,.2);font-size:12px;color:hsl(var(--hue),75%,80%)}
 body.t-ethereal button,body.t-ethereal select{font:12px Georgia,serif;background:hsla(var(--hue),46%,26%,.6);color:hsl(var(--hue),90%,94%);border:1px solid hsla(var(--hue),80%,74%,.38);padding:4px 8px}
 body.t-ethereal button:hover,body.t-ethereal select:hover{background:hsla(var(--hue),58%,36%,.75);box-shadow:0 0 10px var(--glow)}
-body.t-ethereal .m-btn.active,body.t-ethereal .cal-m.active,body.t-ethereal .cal-d.active,body.t-ethereal .eclipse-btn.active,body.t-ethereal .theme-btn.active{background:hsla(var(--hue),85%,62%,.34);border-color:hsl(calc(var(--hue) + 38),95%,78%);color:hsl(calc(var(--hue) + 38),95%,82%);box-shadow:0 0 12px var(--glow)}
+body.t-ethereal .m-btn.active,body.t-ethereal .cal-m.active,body.t-ethereal .cal-d.active,body.t-ethereal .eclipse-btn.active,body.t-ethereal .lunar-btn.active,body.t-ethereal .theme-btn.active{background:hsla(var(--hue),85%,62%,.34);border-color:hsl(calc(var(--hue) + 38),95%,78%);color:hsl(calc(var(--hue) + 38),95%,82%);box-shadow:0 0 12px var(--glow)}
 body.t-ethereal select option{background:hsl(var(--hue),45%,15%);color:#f3e8ff}
 body.t-ethereal .cal-pop{background:hsla(var(--hue),45%,11%,.88);border:1px solid hsla(var(--hue),80%,74%,.3)}
 body.t-ethereal .box,body.t-ethereal .box-grid{background:hsla(var(--hue),46%,9%,.64);border:1px solid hsla(var(--hue),80%,74%,.26)}
@@ -212,7 +224,7 @@ body.t-win98 .top,.m-bar{border-bottom:1px solid #808080}
 body.t-win98 .foot{border-top:1px solid #808080;font-size:12px}
 body.t-win98 button,body.t-win98 select{font:bold 12px Tahoma,Arial,sans-serif;background:#c0c0c0;color:#000;border:2px solid;border-color:#fff #000 #000 #fff;padding:3px 7px}
 body.t-win98 .m-btn,body.t-win98 .cal-m,body.t-win98 .cal-d{font-weight:normal}
-body.t-win98 .m-btn.active,body.t-win98 .cal-m.active,body.t-win98 .cal-d.active,body.t-win98 .eclipse-btn.active,body.t-win98 .theme-btn.active{background:hsl(var(--hue),88%,26%);color:#fff;border-color:#000 #fff #fff #000}
+body.t-win98 .m-btn.active,body.t-win98 .cal-m.active,body.t-win98 .cal-d.active,body.t-win98 .eclipse-btn.active,body.t-win98 .lunar-btn.active,body.t-win98 .theme-btn.active{background:hsl(var(--hue),88%,26%);color:#fff;border-color:#000 #fff #fff #000}
 body.t-win98 select{background:#fff;border-color:#808080 #fff #fff #808080;font-weight:normal;padding:3px 4px}
 body.t-win98 button:active{border-color:#000 #fff #fff #000}
 body.t-win98 .cal-pop{background:#c0c0c0;border:2px solid;border-color:#808080 #fff #fff #808080}
@@ -235,7 +247,7 @@ body.slider-default.t-minimal .bar{color:#18181b;border-bottom:1px solid #f0f0f2
 body.slider-default.t-minimal .tarot-row,body.slider-default.t-minimal .eclipse-banner,body.slider-default.t-minimal .lunar-box{background:#fafafa;border:1px solid #e4e4e7;color:#18181b}
 body.slider-default.t-minimal .foot{border-top:1px solid #f0f0f2;color:#71717a}
 body.slider-default.t-minimal button:hover,body.slider-default.t-minimal select:hover{background:#f4f4f5;border-color:#d4d4d8}
-body.slider-default.t-minimal .m-btn.active,body.slider-default.t-minimal .cal-m.active,body.slider-default.t-minimal .cal-d.active,body.slider-default.t-minimal .eclipse-btn.active,body.slider-default.t-minimal .theme-btn.active{background:#18181b;border-color:#18181b;box-shadow:none}
+body.slider-default.t-minimal .m-btn.active,body.slider-default.t-minimal .cal-m.active,body.slider-default.t-minimal .cal-d.active,body.slider-default.t-minimal .eclipse-btn.active,body.slider-default.t-minimal .lunar-btn.active,body.slider-default.t-minimal .theme-btn.active{background:#18181b;border-color:#18181b;box-shadow:none}
 body.slider-default.t-minimal .cal-pop{background:#fafafa;border:1px solid #e4e4e7}
 body.slider-default.t-minimal .box,body.slider-default.t-minimal .box-grid{border:1px solid #e4e4e7}
 body.slider-default.t-minimal th{background:#fafafa;color:#52525b;border-bottom:1px solid #e4e4e7}
@@ -255,7 +267,7 @@ body.slider-default.t-ethereal .tarot-row,body.slider-default.t-ethereal .eclips
 body.slider-default.t-ethereal .foot{border-top:1px solid rgba(196,181,253,.18);color:#c4b5fd}
 body.slider-default.t-ethereal button,body.slider-default.t-ethereal select{background:rgba(67,56,118,.55);color:#f3e8ff;border:1px solid rgba(196,181,253,.38)}
 body.slider-default.t-ethereal button:hover,body.slider-default.t-ethereal select:hover{background:rgba(67,56,118,.75);box-shadow:none}
-body.slider-default.t-ethereal .m-btn.active,body.slider-default.t-ethereal .cal-m.active,body.slider-default.t-ethereal .cal-d.active,body.slider-default.t-ethereal .eclipse-btn.active,body.slider-default.t-ethereal .theme-btn.active{background:rgba(167,139,250,.35);border-color:#fde68a;color:#fde68a;box-shadow:none}
+body.slider-default.t-ethereal .m-btn.active,body.slider-default.t-ethereal .cal-m.active,body.slider-default.t-ethereal .cal-d.active,body.slider-default.t-ethereal .eclipse-btn.active,body.slider-default.t-ethereal .lunar-btn.active,body.slider-default.t-ethereal .theme-btn.active{background:rgba(167,139,250,.35);border-color:#fde68a;color:#fde68a;box-shadow:none}
 body.slider-default.t-ethereal select option{background:#1c1638;color:#f3e8ff}
 body.slider-default.t-ethereal .cal-pop{background:rgba(20,16,40,.88);border:1px solid rgba(196,181,253,.28)}
 body.slider-default.t-ethereal .box,body.slider-default.t-ethereal .box-grid{background:rgba(17,13,34,.6);border:1px solid rgba(196,181,253,.24)}
@@ -271,7 +283,7 @@ body.slider-default.t-ethereal .l{color:#a5b4fc}
 
 body.slider-default.t-win98{background:#3a6ea5;color:#000}
 body.slider-default.t-win98 .bar{background:linear-gradient(90deg,#000080,#1084d0)}
-body.slider-default.t-win98 .m-btn.active,body.slider-default.t-win98 .cal-m.active,body.slider-default.t-win98 .cal-d.active,body.slider-default.t-win98 .eclipse-btn.active,body.slider-default.t-win98 .theme-btn.active{background:#000080;border-color:#000 #fff #fff #000}
+body.slider-default.t-win98 .m-btn.active,body.slider-default.t-win98 .cal-m.active,body.slider-default.t-win98 .cal-d.active,body.slider-default.t-win98 .eclipse-btn.active,body.slider-default.t-win98 .lunar-btn.active,body.slider-default.t-win98 .theme-btn.active{background:#000080;border-color:#000 #fff #fff #000}
 body.slider-default.t-win98 th{background:#000080;border:1px solid #003399}
 body.slider-default.t-win98 td{border:1px solid #003399}
 body.slider-default.t-win98 tr:nth-child(even) td{background:#eef4ff}
@@ -293,7 +305,6 @@ body.slider-default.t-win98 .l{color:#334466}
     <div class="bar"><span>&nbsp;</span><span>[SwissEph · GMT/UT]</span></div>
     <div class="sub-bar">
       <button id="tarotBtn" type="button">Tarot</button>
-      <button id="lunarAspectBtn" type="button" title="Show Applying Lunar Aspects">🌙</button>
     </div>
     <div id="tarotList" class="tarot-list" aria-live="polite"></div>
     <div id="lunarAspectBox" class="lunar-box" aria-live="polite">
@@ -312,6 +323,7 @@ body.slider-default.t-win98 .l{color:#334466}
         <button id="nextBtn" type="button" title="Step Forward">▶</button>
         <button id="calToggleBtn" class="cal-btn" type="button" title="Pick Day, Month & Year">Calendar</button>
         <button id="nowBtn" class="refresh-btn" type="button">Refresh</button>
+        <button id="lunarAspectBtn" class="lunar-btn" type="button" title="Show Applying Lunar Aspects">🌙</button>
       </div>
     </div>
 
@@ -369,7 +381,7 @@ body.slider-default.t-win98 .l{color:#334466}
   <div class="win">
     <div class="bar"><span>Ephemeris</span><span>[00:00 GMT]</span></div>
     <div class="m-bar">
-      <span id="mDateLabel">Select Month</span>
+      <span id="mDateLabel">&nbsp;</span>
       <div class="nav">
         <select id="gridYearSel" aria-label="Select grid year (1900–2200)"></select>
         <button id="eclipseBtn" class="eclipse-btn" type="button" title="Toggle Eclipse & North Node View" aria-pressed="false">🌔</button>
@@ -387,13 +399,12 @@ body.slider-default.t-win98 .l{color:#334466}
 
 </div>
 
-
 <script type="module">
 import SwissEph from 'https://cdn.jsdelivr.net/gh/prolaxu/swisseph-wasm@0.1.0/src/swisseph.js';
 
 const SIGN_ABBR = [
-  "Ari","Taur","Gmn","Can","Leo","Vir",
-  "Lbr","Scr","Sag","Cap","Aqu","Pisc"
+  "Ari","Taur","Gem","Can","Leo","Vir",
+  "Lib","Sco","Sag","Cap","Aqu","Pisc"
 ];
 const SIGN_FULL = [
   "Aries","Taurus","Gemini","Cancer","Leo","Virgo",
@@ -677,12 +688,33 @@ function fmtCardForLon(lon) {
   return DECAN_TO_CARD[decanLabel] || "—";
 }
 
-function fmtHours(ms) {
-  const hrs = Math.max(0, ms) / 3600000;
-  return `${hrs.toFixed(1)}h`;
+function fmtBriefDateTime(dt) {
+  return dt.toLocaleString([], {
+    month: "short",
+    day: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
 
-function computeUpcomingLunarAspects(startDt, count = 6) {
+function findNextMoonSignChangeFrom(fromDt) {
+  const flags = swe.SEFLG_SWIEPH || 0;
+  const startLon = n360(swe.calc_ut(toJulianGMT(fromDt), swe.SE_MOON, flags)[0]);
+  const startSign = splitLon(startLon).signIdx;
+  const stepMs = 15 * 60 * 1000;
+  const maxMs = 4 * 86400 * 1000;
+
+  for (let ms = stepMs; ms <= maxMs; ms += stepMs) {
+    const dt = new Date(fromDt.getTime() + ms);
+    const lon = n360(swe.calc_ut(toJulianGMT(dt), swe.SE_MOON, flags)[0]);
+    if (splitLon(lon).signIdx !== startSign) {
+      return { msFromOrigin: ms, dt, lon, nextSignAbbr: splitLon(lon).abbr };
+    }
+  }
+  return null;
+}
+
+function computeLunarSchedule(startDt, count = 6) {
   const flags = swe.SEFLG_SWIEPH || 0;
   const stepMs = 30 * 60 * 1000;
   const maxScanMs = 30 * 86400 * 1000;
@@ -734,22 +766,67 @@ function computeUpcomingLunarAspects(startDt, count = 6) {
             }
           }
 
+          const evDt = new Date(startDt.getTime() + bestMs);
+          const evJd = toJulianGMT(evDt);
+          const mSign = splitLon(swe.calc_ut(evJd, swe.SE_MOON, flags)[0]).abbr;
+          const pSign = splitLon(swe.calc_ut(evJd, pId, flags)[0]).abbr;
+
           events.push({
+            kind: "aspect",
             msFromStart: bestMs,
+            dt: evDt,
             planetName: pName,
             planetGlyph: pGlyph,
-            aspectName: aspName
+            planetSign: pSign,
+            moonSign: mSign,
+            aspectName: aspName,
+            vocAfter: false
           });
         }
       }
     }
 
     prev = curr;
-    if (events.length >= count + 10) break;
+    if (events.length >= count + 14) break;
   }
 
   events.sort((a, b) => a.msFromStart - b.msFromStart);
-  return events.slice(0, count);
+
+  for (let i = 0; i < events.length; i++) {
+    const ev = events[i];
+    const signExit = findNextMoonSignChangeFrom(ev.dt);
+    const nextEv = events[i + 1];
+    const hasLaterAspectBeforeExit =
+      nextEv && (!signExit || nextEv.dt.getTime() <= signExit.dt.getTime());
+    ev.vocAfter = !hasLaterAspectBeforeExit;
+  }
+
+  const initialSignExit = findNextMoonSignChangeFrom(startDt);
+  const firstAspectMs = events.length ? events[0].msFromStart : Infinity;
+  const result = [];
+
+  if (initialSignExit && firstAspectMs > initialSignExit.msFromOrigin) {
+    const startMoonSign = splitLon(swe.calc_ut(toJulianGMT(startDt), swe.SE_MOON, flags)[0]).abbr;
+    result.push({
+      kind: "voc",
+      msFromStart: 0,
+      dt: initialSignExit.dt,
+      moonSign: startMoonSign,
+      aspectName: "Void of Course",
+      vocAfter: true
+    });
+  }
+
+  for (const ev of events) {
+    if (result.length >= count) break;
+    result.push(ev);
+  }
+
+  return result;
+}
+
+function formatAspectTitle(ev) {
+  return ev.vocAfter ? `${ev.aspectName} · Void of Course` : ev.aspectName;
 }
 
 function renderLunarAspects() {
@@ -760,34 +837,50 @@ function renderLunarAspects() {
   }
   box.classList.add("open");
 
-  const aspects = computeUpcomingLunarAspects(viewDate, 6);
+  const items = computeLunarSchedule(viewDate, 6);
   const heroEl = document.getElementById("lunarHero");
   const nextListEl = document.getElementById("lunarNextList");
 
-  if (!aspects.length) {
+  if (!items.length) {
     heroEl.innerHTML = `<span class="lunar-hero-label">No lunar aspect within 30d</span>`;
     nextListEl.innerHTML = "";
     return;
   }
 
-  const first = aspects[0];
-  heroEl.innerHTML =
-    `<div class="lunar-pair">` +
-      `<span class="lunar-big-glyph">☽</span>` +
-      `<span class="lunar-big-glyph">${first.planetGlyph}</span>` +
-    `</div>` +
-    `<div class="lunar-hero-label">${first.aspectName}</div>` +
-    `<div class="lunar-hero-hrs">in ${fmtHours(first.msFromStart)}</div>`;
+  const first = items[0];
+  if (first.kind === "voc") {
+    heroEl.innerHTML =
+      `<div class="lunar-voc-row">` +
+        `<span class="lunar-big-glyph">☽<span class="lunar-big-sup">${first.moonSign}</span></span>` +
+        `<span class="lunar-voc-text">Void of Course</span>` +
+      `</div>` +
+      `<div class="lunar-hero-time">until ${fmtBriefDateTime(first.dt)}</div>`;
+  } else {
+    heroEl.innerHTML =
+      `<div class="lunar-pair">` +
+        `<span class="lunar-big-glyph">☽<span class="lunar-big-sup">${first.moonSign}</span></span>` +
+        `<span class="lunar-big-glyph">${first.planetGlyph}<span class="lunar-big-sup">${first.planetSign}</span></span>` +
+      `</div>` +
+      `<div class="lunar-hero-label">${formatAspectTitle(first)}</div>` +
+      `<div class="lunar-hero-time">${fmtBriefDateTime(first.dt)}</div>`;
+  }
 
-  const rest = aspects.slice(1, 6);
-  nextListEl.innerHTML = rest.map((ev, idx) => {
-    const prevMs = aspects[idx].msFromStart;
-    const gapMs = ev.msFromStart - prevMs;
+  const rest = items.slice(1, 6);
+  nextListEl.innerHTML = rest.map(ev => {
+    if (ev.kind === "voc") {
+      return `<div class="lunar-item">` +
+        `<span class="lunar-item-left"><span class="lunar-item-g">☽<span class="lunar-item-sup">${ev.moonSign}</span></span></span>` +
+        `<span class="lunar-item-desc">Void of Course</span>` +
+        `<span class="lunar-item-time">${fmtBriefDateTime(ev.dt)}</span>` +
+      `</div>`;
+    }
     return `<div class="lunar-item">` +
-      `<span class="lunar-item-g">☽</span>` +
-      `<span class="lunar-item-desc">${ev.aspectName}</span>` +
-      `<span class="lunar-item-hrs">+${fmtHours(gapMs)}</span>` +
-      `<span class="lunar-item-g">${ev.planetGlyph}</span>` +
+      `<span class="lunar-item-left">` +
+        `<span class="lunar-item-g">☽<span class="lunar-item-sup">${ev.moonSign}</span></span>` +
+        `<span class="lunar-item-g">${ev.planetGlyph}<span class="lunar-item-sup">${ev.planetSign}</span></span>` +
+      `</span>` +
+      `<span class="lunar-item-desc">${formatAspectTitle(ev)}</span>` +
+      `<span class="lunar-item-time">${fmtBriefDateTime(ev.dt)}</span>` +
     `</div>`;
   }).join("");
 }
@@ -934,10 +1027,10 @@ function buildMonthGridRows(offset) {
   const prevSpeeds = Array(bodies.length).fill(null);
   const rows = [];
 
-  const nowLocal = new Date();
-  const todayY = nowLocal.getFullYear();
-  const todayM = nowLocal.getMonth();
-  const todayD = nowLocal.getDate();
+  const nowUtc = new Date();
+  const todayY = nowUtc.getUTCFullYear();
+  const todayM = nowUtc.getUTCMonth();
+  const todayD = nowUtc.getUTCDate();
 
   for (let day = 1; day <= daysInMonth; day++) {
     const dayDt = new Date(Date.UTC(year, month, day, 0, 0, 0));
@@ -1065,8 +1158,17 @@ function renderCalendarMenu() {
         viewDate.getUTCMinutes(),
         viewDate.getUTCSeconds()
       ));
-      gridYear = calYear;
-      renderAll();
+      renderPrimaryOnly();
+      document.getElementById("t").textContent =
+        viewDate.toLocaleString([], {
+          year: "2-digit",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit"
+        }) + " (GMT: " +
+        viewDate.toISOString().slice(11, 16) + ")";
+      renderCalendarMenu();
     });
   });
 
@@ -1090,10 +1192,7 @@ function renderMonthModule() {
     });
   });
 
-  const { year, month } = monthTargetYearMonth(selectedMonthOffset);
-  const headingDt = new Date(Date.UTC(year, month, 1));
-  document.getElementById("mDateLabel").textContent =
-    headingDt.toLocaleDateString([], { month: "long", year: "numeric", timeZone: "UTC" });
+  document.getElementById("mDateLabel").innerHTML = "&nbsp;";
 
   renderGridHeader();
   document.getElementById("mr").innerHTML = buildMonthGridRows(selectedMonthOffset);
