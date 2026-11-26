@@ -65,7 +65,8 @@ body{margin:0;padding:10px;min-height:100vh;transition:background .25s ease,colo
 .lunar-voc-text{font-size:14px;font-weight:700;letter-spacing:.3px}
 .lunar-hero-label{margin-top:6px;font-size:12.5px;font-weight:700;letter-spacing:.4px}
 .lunar-hero-time{margin-top:2px;font-family:monospace;font-size:11px;opacity:.88}
-.lunar-list{display:flex;flex-direction:column;gap:4px}
+.lunar-hero-ingress{margin-top:3px;font-family:monospace;font-size:11px;font-weight:600;opacity:.92}
+.lunar-list{display:flex;flex-direction:column;gap:5px}
 .lunar-item{
   display:grid;grid-template-columns:46px 1fr auto;align-items:center;gap:6px;
   padding:3px 4px;font-size:12px;
@@ -76,7 +77,9 @@ body{margin:0;padding:10px;min-height:100vh;transition:background .25s ease,colo
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
   font-size:9.5px;font-weight:700;vertical-align:super;margin-left:1px;opacity:.92;
 }
+.lunar-item-mid{display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2}
 .lunar-item-desc{text-align:center;font-size:11.5px;opacity:.95;white-space:nowrap}
+.lunar-item-ingress{font-family:monospace;font-size:10px;opacity:.85;white-space:nowrap}
 .lunar-item-time{font-family:monospace;font-size:10.5px;opacity:.86;text-align:right;white-space:nowrap}
 
 .top,.m-bar,.foot{padding:7px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:6px}
@@ -399,6 +402,7 @@ body.slider-default.t-win98 .l{color:#334466}
 
 </div>
 
+
 <script type="module">
 import SwissEph from 'https://cdn.jsdelivr.net/gh/prolaxu/swisseph-wasm@0.1.0/src/swisseph.js';
 
@@ -707,8 +711,9 @@ function findNextMoonSignChangeFrom(fromDt) {
   for (let ms = stepMs; ms <= maxMs; ms += stepMs) {
     const dt = new Date(fromDt.getTime() + ms);
     const lon = n360(swe.calc_ut(toJulianGMT(dt), swe.SE_MOON, flags)[0]);
-    if (splitLon(lon).signIdx !== startSign) {
-      return { msFromOrigin: ms, dt, lon, nextSignAbbr: splitLon(lon).abbr };
+    const info = splitLon(lon);
+    if (info.signIdx !== startSign) {
+      return { msFromOrigin: ms, dt, lon, nextSignAbbr: info.abbr };
     }
   }
   return null;
@@ -780,7 +785,7 @@ function computeLunarSchedule(startDt, count = 6) {
             planetSign: pSign,
             moonSign: mSign,
             aspectName: aspName,
-            vocAfter: false
+            ingressAfter: null
           });
         }
       }
@@ -792,15 +797,22 @@ function computeLunarSchedule(startDt, count = 6) {
 
   events.sort((a, b) => a.msFromStart - b.msFromStart);
 
+  // If no later aspect occurs before Moon leaves its current sign, attach the ingressed sign & time
   for (let i = 0; i < events.length; i++) {
     const ev = events[i];
     const signExit = findNextMoonSignChangeFrom(ev.dt);
     const nextEv = events[i + 1];
     const hasLaterAspectBeforeExit =
       nextEv && (!signExit || nextEv.dt.getTime() <= signExit.dt.getTime());
-    ev.vocAfter = !hasLaterAspectBeforeExit;
+    if (!hasLaterAspectBeforeExit && signExit) {
+      ev.ingressAfter = {
+        signAbbr: signExit.nextSignAbbr,
+        dt: signExit.dt
+      };
+    }
   }
 
+  // If Moon is presently Void of Course right now, show Void of Course in the hero
   const initialSignExit = findNextMoonSignChangeFrom(startDt);
   const firstAspectMs = events.length ? events[0].msFromStart : Infinity;
   const result = [];
@@ -812,8 +824,8 @@ function computeLunarSchedule(startDt, count = 6) {
       msFromStart: 0,
       dt: initialSignExit.dt,
       moonSign: startMoonSign,
-      aspectName: "Void of Course",
-      vocAfter: true
+      nextSignAbbr: initialSignExit.nextSignAbbr,
+      aspectName: "Void of Course"
     });
   }
 
@@ -823,10 +835,6 @@ function computeLunarSchedule(startDt, count = 6) {
   }
 
   return result;
-}
-
-function formatAspectTitle(ev) {
-  return ev.vocAfter ? `${ev.aspectName} · Void of Course` : ev.aspectName;
 }
 
 function renderLunarAspects() {
@@ -854,32 +862,35 @@ function renderLunarAspects() {
         `<span class="lunar-big-glyph">☽<span class="lunar-big-sup">${first.moonSign}</span></span>` +
         `<span class="lunar-voc-text">Void of Course</span>` +
       `</div>` +
-      `<div class="lunar-hero-time">until ${fmtBriefDateTime(first.dt)}</div>`;
+      `<div class="lunar-hero-time">→ ${first.nextSignAbbr} · ${fmtBriefDateTime(first.dt)}</div>`;
   } else {
+    const heroIngressHtml = first.ingressAfter
+      ? `<div class="lunar-hero-ingress">→ ${first.ingressAfter.signAbbr} · ${fmtBriefDateTime(first.ingressAfter.dt)}</div>`
+      : "";
     heroEl.innerHTML =
       `<div class="lunar-pair">` +
         `<span class="lunar-big-glyph">☽<span class="lunar-big-sup">${first.moonSign}</span></span>` +
         `<span class="lunar-big-glyph">${first.planetGlyph}<span class="lunar-big-sup">${first.planetSign}</span></span>` +
       `</div>` +
-      `<div class="lunar-hero-label">${formatAspectTitle(first)}</div>` +
-      `<div class="lunar-hero-time">${fmtBriefDateTime(first.dt)}</div>`;
+      `<div class="lunar-hero-label">${first.aspectName}</div>` +
+      `<div class="lunar-hero-time">${fmtBriefDateTime(first.dt)}</div>` +
+      heroIngressHtml;
   }
 
   const rest = items.slice(1, 6);
   nextListEl.innerHTML = rest.map(ev => {
-    if (ev.kind === "voc") {
-      return `<div class="lunar-item">` +
-        `<span class="lunar-item-left"><span class="lunar-item-g">☽<span class="lunar-item-sup">${ev.moonSign}</span></span></span>` +
-        `<span class="lunar-item-desc">Void of Course</span>` +
-        `<span class="lunar-item-time">${fmtBriefDateTime(ev.dt)}</span>` +
-      `</div>`;
-    }
+    const ingressLine = ev.ingressAfter
+      ? `<span class="lunar-item-ingress">→ ${ev.ingressAfter.signAbbr} · ${fmtBriefDateTime(ev.ingressAfter.dt)}</span>`
+      : "";
     return `<div class="lunar-item">` +
       `<span class="lunar-item-left">` +
         `<span class="lunar-item-g">☽<span class="lunar-item-sup">${ev.moonSign}</span></span>` +
         `<span class="lunar-item-g">${ev.planetGlyph}<span class="lunar-item-sup">${ev.planetSign}</span></span>` +
       `</span>` +
-      `<span class="lunar-item-desc">${formatAspectTitle(ev)}</span>` +
+      `<span class="lunar-item-mid">` +
+        `<span class="lunar-item-desc">${ev.aspectName}</span>` +
+        ingressLine +
+      `</span>` +
       `<span class="lunar-item-time">${fmtBriefDateTime(ev.dt)}</span>` +
     `</div>`;
   }).join("");
